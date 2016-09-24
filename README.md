@@ -1,5 +1,2 @@
-# apply for Janssen SDTM study:
-1, extra the info from xfdf files which export from adobe reader PDF
-2, sync the info to SDTM spec. 
-3, modify the incorrect aCRF page number info
+# Some tools based on SAS code developed by me
 
