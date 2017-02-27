@@ -1,5 +1,5 @@
 %sasdrugdev_login(
-sdd_url=%str(https://sddcampine.ondemand.sas.com), 
+sdd_url=%str(https://jajprod.ondemand.sas.com), 
 sdd_userid=%str(ABCDEFG), 
 sdd_password=%str(XXXXX)
 )
