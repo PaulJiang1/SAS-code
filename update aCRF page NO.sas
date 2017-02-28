@@ -19,6 +19,11 @@ Update hisitory:
 2016-8-18: update the QSCAT filter part, fix SUPP var whose IDVAR =  QSCAT ;
 2016-9-7 : compress continous blank in annotation at first ( compbl ) ; 
 2016-9-7 : add font style check ;
+2016-10-18 : modify the period sign after variable name issue eg "xxxxVARNAME." ;
+2016-10-18 : some place using translate function replace tranwrd ;
+2017-02-28 : add more new QSCAT / QSTEST format ;
+2017-02-28 : adjust the filter rule in VALDEF_SUPP ;
+2017-02-28 : adjust the filter rule in font style check ;
 -------------------------------------------------------------------------------
 MODIFICATION HISTORY: Subversion $Rev:  $
 -----------------------------------------------------------------------------*/
@@ -35,15 +40,15 @@ MODIFICATION HISTORY: Subversion $Rev:  $
 /*  5, please make sure your annotation is CRF is clean, and only have text box , no highlight or comments note*/
 /*  6, please check your log after running this macro, if have some warnning, you should pay attention
        usually it is due to your spec columns have different formats, SAS don't support different attribute
-       within one variable   
-*/
-
+       within one variable   */
+/*  7, if you need to check QS.QSCAT.QSTESTCD set in VALDEF, please hard code QSCAT=XXXX in aCRF first           */
+ 
 /******************************************************************************/
 /*  Suppose your QSTESTCD is uniqued, if not please use another version       */
 /******************************************************************************/
 
-%let specname=%str(228657 sdtm mapping specifications v 1.0.xlsx);    /*(containing the extend name "XLSX" or other )*/
-%let acrf= %str(54767414MMY1006_AnnotatedSDTM_eCRF_ V1.1_20160902) ;    /*only file name*/
+%let specname=%str(232821 sdtm mapping specifications v0.9.xlsx);    /*(containing the extend name "XLSX" or other )*/
+%let acrf= %str(56022473MDS2002_AnnotatedSDTM_eCRF_V2.1) ;    /*only file name*/
 %let mainrange=%str(B9:S);  /* for old spec it is  B7:S  ;  for new spec it is B9:S   */
 %let supprange=&mainrange;
 
@@ -90,8 +95,10 @@ file print;
   if a;
 
   if _n_=1 then do;
-    re12= prxparse('/font:.*italic bold Arial.*12\.0pt/');
-    re10= prxparse('/font:.*italic bold Arial.*10\.0pt/');
+
+/*  font: italic bold Arial 10pt; text-align:left; color:#0000FF*/
+    re12= prxparse('/font:.*italic bold Arial.*12.*pt/');
+    re10= prxparse('/font:.*italic bold Arial.*10.*pt/');
   end;
 retain re10 re12  ;
 
@@ -125,14 +132,17 @@ data table1;
   annotation= compbl(annotation);
   annotation= tranwrd(annotation,'= ','=');
   annotation= tranwrd(annotation,' =','=');
-  annotation= tranwrd(annotation,'*','');
+  annotation= translate(annotation,'','*.');
+  annotation= compbl(annotation);
 run;
 
 data valdef_supp1 ;
   set table1;
   length VALVAL $20 ;
-  where compress(annotation) like '%inSUPP__whenIDVAR=%' or 
-        compress(annotation) like '%inSUPP__whereIDVAR=%';
+/*  where compress(annotation) like '%inSUPP__whenIDVAR=%' or */
+/*        compress(annotation) like '%inSUPP__whereIDVAR=%';*/
+where compress(annotation) like '%inSUPP__%' ;
+
   VALVAL= scan(annotation,1,' =');
   var2= substr(annotation, find(annotation,'SUPP'), 6 ) ;
   VALUEOID= catx('.', var2,'QNAM');
@@ -193,7 +203,6 @@ length page $100 VALVAL $20;
   keep VALUEOID VALVAL page freetext_ORDINAL ;
 run;
 
-
 data valdef_CAT ;
   length VALUEOID $200 VALVAL $20;
   set table1;
@@ -220,69 +229,272 @@ data valdef_CAT1;
   keep VALUEOID VALVAL page freetext_ORDINAL ;
 run;
 
+/*update QSCAT items from latest std_metadata*/
+
+/*libname metadata 'D:\Dropbox\Parexel\Projects\#56022473AML2002\Janssen SDTM metadata\metadata';*/
+/*data valdef;*/
+/*  set metadata.valdef;*/
+/*  where find(VALUEOID,'QSTESTCD')>1 and VALVAL ne 'QSALL';*/
+/*  ID= scan(VALLABEL,1,'-');*/
+/*  QSCAT=scan(VALUEOID,3,'.'); */
+/*  TEXT= cats("'",QSCAT,"'='", ID, "'");*/
+/*run;*/
+/**/
+/*proc sort data= valdef out=qscat_fmt nodupkey;*/
+/*by VALUEOID;*/
+/*run;*/
+
 
 proc format ;
 value $QSCAT
 /*put QSCAT to QSTESTCD's prefix*/
-'AUSCAN NRS'='AUSN'
-'BDI-II'='BDI'
+'ABC'='ABC01'
+'ACQ'='ACQ01'
+'AD8'='AD801'
+'ADCS ADL PREVENTION PARTICIPANT'='AAP1'
+'ADCS ADL PREVENTION STUDY PARTNER'='AAP2'
+'ADOS2 MOD 1'='ADS1'
+'ADOS2 MOD 2'='ADS2'
+'ADOS2 MOD 3'='ADS3'
+'ADOS2 MOD 4'='ADS4'
+'AQRM'='AQR90'
+'ASAS'='ASAS01'
+'ASEC'='ASEC1'
+'ASEX-FEMALE'='ASEX01'
+'ASEX-MALE'='ASEX02'
+'ASQOL'='ASQL01'
+'AUSCAN NRS'='AUSN01'
+'BASDAI'='BASD01'
+'BASFI'='BASF01'
+'BASMI'='BASM01'
+'BDI-II'='BDI02'
+'BFI'='BFI01'
+'BHS'='BHS01'
+'BOND AND LADER VAS'='BLVAS1'
+'BOWDLE VAS'='BOWV01'
 'BPI SHORT FORM'='BPI2'
-'BPIC-SS'='BPIC'
-'BPRS MODIFIED'='BPR9'
+'BPIC-SS'='BPIC01'
+'BPRS MODIFIED'='BPR90'
+'BRISTOL STOOL CHART SCORING'='BSCS90'
+'BRISTOL STOOL CHART'='BSC01'
+'BSQ'='BSQ01'
+'BSS'='BSS01'
 'C-SSRS BASELINE'='CSS01'
 'C-SSRS BASELINE/SCREENING VERSION'='CSS04'
 'C-SSRS SINCE LAST VISIT'='CSS02'
-'CADSS'='CADS'
-'CHRT'='CHR'
+'CADD'='CADD01'
+'CADSS'='CADS01'
+'CASI-ANX'='CAS3'
+'CAUS'='CAUS90'
+'CDAI'='CDAI01'
+'CDLQI'='CDLQ1'
+'CDR-SB'='CDR04'
+'CDR'='CDR01'
+'CESD'='CESD01'
+'CFI PARTICIPANT'='CFI01'
+'CFI STUDY PARTNER'='CFI02'
+'CFIA PARTICIPANT'='CFIA90'
+'CFIA STUDY PARTNER'='CFIA91'
+'CGAA'='CGAA90'
+'CGI-C JAPAN'='CGI90'
+'CGI-C MDG'='CGI91'
+'CGI-SS'='CGISS1'
+'CGI'='CGI01'
+'CHES-Q BASELINE'='CHSQ90'
+'CHES-Q ENDPOINT'='CHSQ90'
+'CHRT'='CHR01'
+'CLASI'='CLAS01'
+'CLDQ-HCV'='CLDQ01'
+'CPC'='CPC01'
+'CPFQ'='CPFQ01'
+'CRDPSS'='CRDP01'
+'CSQ'='CSQ90'
+'CTS'='CTS01'
+'CUDOS-A'='CUDOS1'
+'DDS17'='DDS01'
+'DLQI'='DLQI1'
+'DRUG LIKING SCALE'='DLV01'
+'DSA'='DSA01'
+'DTSQC'='DTSQ02'
+'DTSQS'='DTSQ01'
+'EASI'='EASI01'
+'ECOG'='ECOG1'
 'EQ-5D-3L'='EQ5D01'
 'EQ-5D-5L'='EQ5D02'
-'FACIT-F'='FACT'
+'ETISR-SF'='ETI01'
+'EXACT'='EXACT1'
+'FACIT FATIGUE'='FACT09'
+'FACIT-F'='FACT05'
+'FACT-AN'='FACT07'
+'FACT-COG'='FACT08'
+'FACT-LYM'='FACT02'
 'FACT-Leu'='FACT06'
 'FACT-P'='FACT04'
+'FACT/GOG-NTX'='FACT03'
 'FAQ-NACC'='FAQ02'
 'FAQ'='FAQ01'
-'FPGA'='FPGA'
-'FSS2'='FSS'
+'FLU-IIQ ADDITIONAL'='FLU90'
+'FLU-IIQ'='FLU01'
+'FLU-PRO ADDITIONAL'='FPRO90'
+'FLU-PRO V2 ADDITIONAL'='FPRO91'
+'FLU-PRO V2'='FPRO02'
+'FLU-PRO'='FPRO01'
+'FPGA'='FPGA01'
+'FRI INDEX'='FRI01'
+'FSS2'='FSS02'
+'FTPS'='FTPS01'
 'GAD-7'='GAD01'
 'GDS SHORT FORM'='GDS02'
 'GDS'='GDS01'
-'HAQ-DI'='HAQ'
-'HCV SIQ'='HSIQ'
-'HFPGA'='HFPG'
+'GOAL'='GOAL90'
+'GSQS'='GSQS01'
+'HADS'='HADS01'
+'HAM-A'='HAMA1'
+'HAMD 17'='HAMD1'
+'HAQ-DI'='HAQ01'
+'HCV SIQ V4'='HSIQ02'
+'HFPGA'='HFPG01'
+'HIS ROSEN'='HISR01'
+'IBDQ'='IBDQ01'
+'IDS-C SIGH'='IDS09'
 'IDS-C'='IDS01'
 'IDS-SR'='IDS02'
-'IGA-AD'='IGAAD'
-'JDA SEVERITY INDEX'='JDA'
+'IES V2'='IES01'
+'IES-R'='IESR01'
+'IGA-AD'='IGAAD1'
+'IGA'='IGA90'
+'IMRS CLIENT'='IMRS01'
+'ISI'='ISI01'
+'IVAS'='IVAS90'
+'IWQOL-LITE'='IWQL02'
+'JDA SEVERITY INDEX'='JDA01'
+'KATZ-ADL'='KATZ01'
 'KPS SCALE'='KPSS'
-'MADRS'='MADR'
-'MDASI'='MDA'
-'MOAAS'='MOAA'
+'KSS'='KSS01'
+'LSAS'='LSAS1'
+'LSEQ'='LSEQ1'
+'MADRS'='MADR01'
+'MASES'='MASES1'
+'MCTSQ'='MCTSQ9'
+'MDASI'='MDA01'
+'MDR-TB SOURCE CASE'='MDRTB1'
+'MELD'='MELD90'
+'MGH ATRQ ADULT'='ATRQ01'
+'MGH ATRQ GERIATRIC'='ATRQ02'
+'MINI 7 MDD'='MINI90'
+'MINI 700'='MINI01'
+'MINI KID'='MINI02'
+'MINI-MAJOR DEPRESSIVE EPISODE CURRENT'='MI91'
+'MOAAS'='MOAA01'
+'MOD MFSAF 1W AVERAGE'='MFSA92'
+'MODIFIED MFSAF 24H'='MFSA90'
+'MODIFIED MFSAF 7D'='MFSA91'
 'MOS SLEEP REVISED'='MOSS02'
 'MOS SLEEP SCALE'='MOSS01'
-'NAPSI'='NAPS'
-'P-FIBS'='PFIB'
-'PAIN NRS OA'='PNRS'
-'PGA OA'='PGAO'
+'MRS'='MRS01'
+'NAPSI'='NAPS01'
+'NPGA'='NPGA90'
+'NSQ'='NSQ90'
+'NTQ'='NTQ90'
+'P-FIBS'='PFIB01'
+'PABP'='PABP90'
+'PAIN NRS OA'='PNRS90'
+'PAP'='PAP90'
+'PAQ'='PAQ01'
+'PARTICIPANT EXPECTATIONS BASELINE'='PEI90'
+'PASI'='PASI01'
+'PDQ'='PDQ01'
+'PDQS'='PDQS01'
+'PDSS'='PDSS01'
+'PGA OA'='PGAOA9'
+'PGA PP'='PGAP90'
+'PGAA'='PGAA90'
 'PGAD PATIENT'='PGAD91'
-'PGAD PHYSICIAN'='PGAD90'
-'PHQ-9'='PHQ'
+'PGAD PHYSICIAN'='PGAD91'
+'PGIC MDS'='PGIC92'
+'PGIC MF'='PGIC91'
+'PGIC-Q MDG'='PGIC94'
+'PGIC-S MDG'='PGIC93'
+'PGICA'='PGICA90'
+'PGISD'='PGIS90'
+'PHQ-9'='PHQ01'
+'POMS 2-A'='POMS03'
+'POMS BF'='POMS01'
+'POMS'='POMS02'
+'PPIGA'='PPIGA90'
+'PPPASI'='PPPA01'
+'PPSI'='PPSI01'
+'PROMIS SF V1 FATIGUE 7A'='PRPH06'
+'PROMIS SF V1 FATIGUE 8A PARTICIPANT'='PRPH08'
+'PROMIS SF V1 PAIN INTERFERENCE 6B'='PRPH13'
+'PROMIS SF V1 PAIN INTERFERENCE 8A PARTICIPANT'='PRPH15'
+'PROMIS SF V1 SLEEP DISTURBANCE 8A PARTICIPANT'='PRPH26'
+'PROMIS-29 PROFILE V2 PARTICIPANT'='PROM02'
+'PSGA'='PSGA90'
+'PSQ'='PSQ90'
+'PSQI'='PSQ1'
 'PSS'='PSS01'
-'PWC'='PWC'
+'PSSD'='PSSD90'
+'PWC'='PWC01'
+'Q-LES-Q-SF'='QLES01'
 'QIDS-C'='QIDS01'
 'QIDS-SR'='QIDS02'
+'QIDS-SR10'='QIDS03'
+'QIDS-SR14'='QIDS90'
+'QLDS'='QLDS01'
 'QLQ-C30'='QLQ01'
 'QLQ-MY20'='QLQ02'
 'QLQ-PR25'='QLQ03'
-'RLCST'='RLCS'
+'QUALMS'='QLMS01'
+'RAPID3'='RAP01'
+'RBS-R'='RBSR01'
+'RI-PRO ADDITIONAL'='RPRO91'
+'RI-PRO'='RPRO01'
+'RLCST'='RLCS01'
+'RRS'='RRS01'
+'RSME'='RSME01'
+'S-LANSS'='SLAN01'
+'SATE'='SAT90'
+'SCORAD'='SCOR1'
+'SDS'='SDS01'
 'SF36 V2 STANDARD'='SF363'
 'SF36 v2 ACUTE'='SF364'
-'SHAPS'='SHAPS'
+'SHAPS'='SHPS01'
+'SHIM'='SHIM01'
+'SIA'='SIA90'
+'SIAQ POST SELF-INJECTION'='SIAQ2'
+'SIAQ PRE SELF-INJECTION'='SIAQ1'
+'SIGHD'='SIGHD1'
+'SIGMA MADRS'='MADR02'
+'SLEEP QUALITY'='SLEE90'
+'SLEEPINESS VAS'='SLVAS1'
+'SRS-2 ADULT'='SRS203'
+'SRS-2 PRESCHOOL'='SRS201'
+'SRS-2 SCHOOL AGE'='SRS202'
+'SSIGA'='SSIGA90'
+'STAI'='STAI01'
+'STANFORD SLEEPINESS'='STAN01'
+'STOP BANG'='STOP01'
+'TAQ'='TAQ90'
+'TASQ'='TASQ90'
+'TNOSS'='TNOSS1'
+'TNSN'='TNSN1'
+'TSQM-9'='TSQM01'
+'TSQM-IV RA'='TSQM90'
+'UAL'='UAL90'
+'VABS II INTERVIEW'='VAB01'
+'VFQ-25 INTERVIEWER ADMINISTERED'='VFQ1'
+'VPAI'='VPAI01'
 'WHODAS 12-ITEM INTERVIEWER'='WDS01'
 'WHODAS 12-ITEM SELF'='WDS02'
-'WOMAC NRS'='WOMN'
-'WPAI-SHP'='WPAI'
-'WURSS ADD'='WURS9'
-'WURSS-21'='WURS0'
+'WLQ SF'='WLQ02'
+'WLQ'='WLQ01'
+'WOMAC NRS'='WOMN01'
+'WPAI-GH'='WPAI02'
+'WPAI-SHP'='WPAI01'
+'WURSS ADD'='WURS90'
+'WURSS-21'='WURS01'
+'ZBI-22'='ZBI01'
 ;
 RUN;
 
@@ -315,8 +527,7 @@ run;
 /*vardef main*/
 data vardef1;
   set table1;
-  annotation1= tranwrd(annotation,'[','^');
-  annotation1= tranwrd(annotation1,']','^');
+  annotation1= translate(annotation,'^','[]');
   annotation1= tranwrd(annotation1,' when ','^');
 /*  maybe we should remove where*/
 /*  annotation1= tranwrd(annotation1,' where ','^');*/
@@ -325,7 +536,7 @@ data vardef1;
   annotation1= tranwrd(annotation1,'=NOT DONE','');
   annotation1= tranwrd(annotation1,', ',',');
   annotation1= tranwrd(annotation1,' ,',',');
-  
+  annotation1= compbl(annotation1);
 run;
 
 title "Variable name check finding" ;
@@ -334,13 +545,15 @@ data vardef2 ;
   file print;
   array element $30 var1-var30;
   do i = 1 to 30 ;
-  element[i]=scan(annotation1,i,',^');
+  element[i]=strip(scan(annotation1,i,',^'));
   if find(element[i],'SUPP')=1 then VAR= element[i] ;
   if find(element[i],'=')>0 then element[i]= scan( element[i], 1,'=') ;
     if upcase(element[i]) ne element[i] then call missing(element[i]);
 /*  20160607  lianbo add for COVAL in CO when IDVAR=TRGRPID issue*/
     if length(element[i])<3 then call missing(element[i]) ;
 /**/
+    if  1< find(element[i], ' ')< length(element[i])  then call missing(element[i]) ;
+
     if length(element[i])>8 then put "w!arn_ing variable "   annotation " length more than 8 char" ;
   end;
 
