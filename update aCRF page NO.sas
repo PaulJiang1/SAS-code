@@ -96,15 +96,14 @@ file print;
 
   if _n_=1 then do;
 
-/*  font: italic bold Arial 10pt; text-align:left; color:#0000FF*/
-    re12= prxparse('/font:.*italic bold Arial.*12.*pt/');
-    re10= prxparse('/font:.*italic bold Arial.*10.*pt/');
+/*  font: italic bold Arial 10pt or 12pt; text-align:left; color:#0000FF*/
+    re= prxparse('/font:.*italic bold Arial.*1[02].*pt/');
   end;
-retain re10 re12  ;
+retain  re  ;
 
-if annotation ne '' and not( prxmatch(re10,defaultstyle )>0 or prxmatch(re12,defaultstyle )>0 )
+if annotation ne '' and not prxmatch(re,defaultstyle )>0 
      then put  annotation "in page: " freetext_page  " font style is incorrect , please check" ;
-drop re1: ;
+drop re ;
 
   if find(annotation,'NOT SUBMITTED')=0 and 
      find(upcase(annotation),'ANNOTATION')=0 and
