@@ -1,12 +1,14 @@
 proc delete data= _all_ ;
 run;
 
+libname transfer "D:\";
+
 data _null_;
   set transfer.LB (keep=STUDYID firstobs=1 obs=1);
   call symputx('STUDYID',STUDYID);
 run;
 
-libname transfer "D:\";
+
 filename trial "D:\LABDICT_2015_08.xls";
 filename latest "D:\LABDICT_ALL_2017_05.xls";
 filename  valust "D:\LUDWIG_VALUELST_2017_05.xls" ;
