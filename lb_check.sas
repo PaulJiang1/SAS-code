@@ -1,11 +1,16 @@
 proc delete data= _all_ ;
 run;
 
+data _null_;
+  set transfer.LB (keep=STUDYID firstobs=1 obs=1);
+  call symputx('STUDYID',STUDYID);
+run;
+
 libname transfer "D:\";
 filename trial "D:\LABDICT_2015_08.xls";
 filename latest "D:\LABDICT_ALL_2017_05.xls";
 filename  valust "D:\LUDWIG_VALUELST_2017_05.xls" ;
-filename result "D:\_LB_CHECK.xls" ;
+filename result "D:\&STUDYID._LB_CHECK.xls" ;
 
 
  proc transpose data= transfer.supplb  out=supplb (drop=_:  );
@@ -16,9 +21,14 @@ filename result "D:\_LB_CHECK.xls" ;
  run;
 proc sql noprint;
   select distinct QNAM into :suppvar separated by ",b." from transfer.supplb;
-quit; 
+  select distinct name into :lbvar separated by " " from sashelp.vcolumn
+           where memname='LB' and libname='TRANSFER' and memtype= 'DATA' and name not in ('STUDYID','DOMAIN') ;
+quit;   
+
 %let suppvar= &suppvar; 
+%let lbvar= &lbvar; 
 %put &suppvar; 
+%put &lbvar; 
 
 proc sql ;
   create table LB_RAW as 
@@ -28,6 +38,8 @@ proc sql ;
   on a.USUBJID=b.USUBJID  and b.IDVARVAL= cats(a.LBSEQ)
   ;
 quit;
+
+
 
 PROC IMPORT	OUT=  LUDWIG_VALUELST 
    DATAFILE= valust
@@ -55,21 +67,27 @@ LBCAT char(65) ,
 LBSPEC char(100),
 LBMETHOD char(100),
 LBTESTCD char(8),
-LBTEST char(40)
+LBTEST char(40),
+LBSTRESU char(25),
+LBORRESU char(25)
 ;
 alter table LABDICT_trial modify 
 LBCAT char(65) ,
 LBSPEC char(100),
 LBMETHOD char(100),
 LBTESTCD char(8),
-LBTEST char(40)
+LBTEST char(40),
+LBSTRESU char(25),
+LBORRESU char(25)
 ;
 alter table LB_RAW modify 
 LBCAT char(65) ,
 LBSPEC char(100),
 LBMETHOD char(100),
 LBTESTCD char(8),
-LBTEST char(40)
+LBTEST char(40),
+LBSTRESU char(25),
+LBORRESU char(25)
 ;
 quit;
 
@@ -192,7 +210,7 @@ run;
 data lb_chk15 ;
   set lb_raw;
   if find("&suppvar","ORSTRESU")>0 then do ;
-    if ORSTRESU= LBORRESU or ORSTRESU=  LBSTRESU then output lb_chk15;
+    if (ORSTRESU= LBORRESU or ORSTRESU=  LBSTRESU) and ORSTRESU ne '' then output lb_chk15;
   end;
 run;
 
@@ -221,7 +239,10 @@ data lb_chk13  lb_chk14;
  where LBSTAT= '' ;
  if compress(LBORRES,'<=>') ne LBORRES and input(compress(LBORRES,'<=>'),??best.) ne . then do;
    if (find(LBORRES,'>')=1 or find(LBORRES,'<')=1 or find(LBORRES,'>=')=1 or find(LBORRES,'<=')=1) and LBSTRESN ne . then output lb_chk13 ; 
-   if substr(LBORRES,1,2) ne substr(LBSTRESC,1,2) then output lb_chk14 ;
+   if find(LBORRES,'=')>0 or find(LBSTRESC,'=')>0 then do; 
+    if compress(LBORRES,'0123456789+-.') ne compress(LBSTRESC,'0123456789+-.') then output lb_chk14 ;
+   end;
+
  end;
 run;
 
@@ -355,15 +376,15 @@ data lb_chk5 lb_chk7 lb_chk31;
   if LBNRIND not in ('HIGH','LOW' , 'NORMAL' , '') then output lb_chk7; 
 
   if LBORRES ne '' and LBNRIND ne '' then do;
-    if (LBNRIND= 'HIGH' and input(LBORRES, best.)<= input(LBORNRHI,best.) )
-	  or (LBNRIND= 'LOW' and input(LBORRES, best.)>= input(LBORNRLO,best.) )
-	  or (LBNRIND= 'NORMAL' and  not( input(LBORNRLO,best.)<=input(LBORRES, best.)<=  input(LBORNRHI,best.))  )
+    if (LBNRIND= 'HIGH' and input(LBORRES, ??best.)<= input(LBORNRHI,??best.) )
+	  or (LBNRIND= 'LOW' and input(LBORRES, ??best.)>= input(LBORNRLO,??best.) )
+	  or (LBNRIND= 'NORMAL' and  not( input(LBORNRLO,??best.)<=input(LBORRES, ??best.)<=  input(LBORNRHI,??best.))  )
 	  then output lb_chk31 ;
   end;
   else if LBORRES ne '' and  LBNRIND = '' then do;
-    if  input(LBORRES, best.)> input(LBORNRHI,best.) > . 
-	   or .<input(LBORRES, best.)< input(LBORNRLO,best.)
-	   or   .<input(LBORNRLO,best.) <=input(LBORRES, best.) <= input(LBORNRHI,best.)
+    if  input(LBORRES, ??best.)> input(LBORNRHI,??best.) > . 
+	   or .<input(LBORRES, ??best.)< input(LBORNRLO,??best.)
+	   or   .<input(LBORNRLO,??best.) <=input(LBORRES, ??best.) <= input(LBORNRHI, ??best.)
 	   then output lb_chk31 ;
   end;
 
@@ -521,9 +542,9 @@ proc sort data= ContentsAsDataSet1(where=(nobs>0)) out=ContentsAsDataSet2 SORTSE
 	by MEMNAME;
 run;
 
-proc sort data= ExceptionSummary SORTSEQ =LINGUISTIC (NUMERIC_COLLATION=ON);
-	by Check_No;
-run;
+/*proc sort data= ExceptionSummary SORTSEQ =LINGUISTIC (NUMERIC_COLLATION=ON);*/
+/*	by Check_No;*/
+/*run;*/
 
 
 proc sql noprint;
@@ -568,7 +589,7 @@ quit;
            %help(&i);
             %if &type=C  %then  _all=catx(' , ',_all , cat("&var char(",cats(_&i),')  format=$',cats(_&i),'.' ) ); ;
 		%end;
-            call execute("proc sql ; alter table  &indsn  modify  " || _all || ';quit;');
+            call execute("proc sql ; alter table  &indsn  modify  " || cats(_all) || ';quit;');
       drop _: ;
      end;
    run;
@@ -611,10 +632,11 @@ ods listing close;
                  AUTOFIT_HEIGHT        = "yes"
                  ORIENTATION           = "landscape"
                  FROZEN_HEADERS        = "3"
+				 FROZEN_rowHEADERS = "no"
                  CENTER_HORIZONTAL     = "yes"
 			      AUTOFILTER            = "all");
 
- ods tagsets.ExcelXP options(sheet_name="ExceptionSummary"  FROZEN_HEADERS = "3");
+ ods tagsets.ExcelXP options(sheet_name="ExceptionSummary"  FROZEN_HEADERS = "3" sheet_interval="TABLE" );
 %trim1(indsn=ExceptionSummary)
 
 proc report data=ExceptionSummary nowd;
@@ -632,11 +654,24 @@ title;
 %let count=1 ; 
   %do %while (%scan(&chcklst, &count,%str( )) ne %str() );
 
-ods tagsets.ExcelXP options(sheet_name="check_%substr(%scan(&chcklst, &count,%str( )),7)"  FROZEN_HEADERS = "1");
+ods tagsets.ExcelXP options(sheet_name="check_%substr(%scan(&chcklst, &count,%str( )),7)" 
+                            FROZEN_HEADERS = "4"
+							FROZEN_rowHEADERS = "1"
+                            sheet_interval="NONE"     );
 /*%cvt_char(data=%scan(&chcklst, &count,%str( ))); */
 %trim1(indsn=%scan(&chcklst, &count,%str( )) )
-
-    proc print data=%scan(&chcklst, &count,%str( )) (drop= STUDYID DOMAIN)  noobs;
+proc report data= Exceptionsummary (where=(Check_No= "%substr(%scan(&chcklst, &count,%str( )) ,7)" ))nowd;
+ columns Description ;
+define Description / style(column)=[cellwidth=6cm];
+run;
+proc print data=%scan(&chcklst, &count,%str( )) 
+%if %scan(&chcklst, &count,%str( )) = LB_CHK15  or %scan(&chcklst, &count,%str( )) = LB_CHK21 %then %do ; 
+    (drop= STUDYID DOMAIN)  
+%end;
+%else %do;
+     (keep= &LBVAR )  
+%end;
+noobs;
         var  _all_  /  style (data)={tagattr='format:@'};
     run;
 
@@ -648,7 +683,11 @@ ods tagsets.ExcelXP options(sheet_name="check_%substr(%scan(&chcklst, &count,%st
 
  %repeat
 
-  ods tagsets.ExcelXP options(sheet_name="Discrete_Result_Map" ABSOLUTE_COLUMN_WIDTH ="20.");
+  ods tagsets.ExcelXP options(sheet_name="Discrete_Result_Map" 
+                              ABSOLUTE_COLUMN_WIDTH ="20."
+							  FROZEN_HEADERS = "1"
+							  FROZEN_rowHEADERS = "no"
+                               sheet_interval="TABLE"   );
     proc print data=Discrete_Result_Map label noobs;
         var  _all_  /  style (data)={tagattr='format:@'};
     run;
