@@ -1,7 +1,12 @@
 proc delete data= _all_ ;
 run;
 
-libname transfer "D:\";
+%let project=223869;
+
+
+%let root=%str(\\CN-SHA-HFP001.ap.pxl.int\VOL5\Groups\STATISTICAL PROGRAMMING\DeptShare\21_Janssen\Janssen Standard Documents - SDTM\LB_CHECK);
+
+libname transfer "&root.\&project";
 
 data _null_;
   set transfer.LB (keep=STUDYID firstobs=1 obs=1);
@@ -9,10 +14,10 @@ data _null_;
 run;
 
 
-filename trial "D:\LABDICT_2015_08.xls";
-filename latest "D:\LABDICT_ALL_2017_05.xls";
-filename  valust "D:\LUDWIG_VALUELST_2017_05.xls" ;
-filename result "D:\&STUDYID._LB_CHECK.xls" ;
+filename trial  "&root.\&project.\LABDICT_2015_10.xls";
+filename latest "&root.\LABDICT_2017_05_01.xls";
+filename valust "&root.\LUDWIG_VALUELST_2017_05.xls" ;
+filename result "&root.\&project.\&STUDYID._LB_CHECK.xls" ;
 
 
  proc transpose data= transfer.supplb  out=supplb (drop=_:  );
@@ -21,84 +26,78 @@ filename result "D:\&STUDYID._LB_CHECK.xls" ;
 	 IDLABEL QLABEL ;
 	 VAR QVAL;
  run;
+
 proc sql noprint;
-  select distinct QNAM into :suppvar separated by ",b." from transfer.supplb;
+  select distinct QNAM into :suppvar separated by ",b." from transfer.supplb  where  QNAM like 'ORST%' or QNAM in ('LBSTNRHQ','LBSTNRLQ') ;
   select distinct name into :lbvar separated by " " from sashelp.vcolumn
            where memname='LB' and libname='TRANSFER' and memtype= 'DATA' and name not in ('STUDYID','DOMAIN') ;
 quit;   
 
 %let suppvar= &suppvar; 
 %let lbvar= &lbvar; 
-%put &suppvar; 
-%put &lbvar; 
-
-proc sql ;
-  create table LB_RAW as 
-  select a.* , b.&suppvar
-  from transfer.LB  as a left join  
-   supplb as b   
-  on a.USUBJID=b.USUBJID  and b.IDVARVAL= cats(a.LBSEQ)
-  ;
-quit;
-
+%put &=suppvar; 
+%put &=lbvar; 
+%macro  mergesupp;
+	%if &suppvar ne %str() %then %do;
+		proc sql ;
+		  create table LB_RAW as 
+		  select a.* , b.&suppvar
+		  from transfer.LB  as a left join  
+		   supplb as b   
+		  on a.USUBJID=b.USUBJID  and b.IDVARVAL= cats(a.LBSEQ)
+		  ;
+		quit;
+	%end;
+	%else %do;
+		data LB_RAW;
+		  set  transfer.LB;
+		run;
+	%end;
+%mend;
+%mergesupp
 
 
 PROC IMPORT	OUT=  LUDWIG_VALUELST 
    DATAFILE= valust
         DBMS=EXCEL REPLACE;
-   SHEET=LUDWIG_VALUELST; 
   GETNAMES=YES;    
 RUN;
 
 PROC IMPORT	 OUT=  LABDICT_ALL
   DATAFILE= latest
-        DBMS=xls REPLACE;	
-   SHEET=LABDICT_ALL; 
-  GETNAMES=YES;    
+        DBMS=excel REPLACE;	
+    GETNAMES=YES;    
 RUN;
 
 PROC IMPORT	 OUT=  LABDICT_trial
    DATAFILE= trial
-        DBMS=xls REPLACE;	
+        DBMS=excel REPLACE;	
    GETNAMES=YES;    
 RUN;
 
-proc sql ;
-alter table LABDICT_ALL modify 
-LBCAT char(65) ,
-LBSPEC char(100),
-LBMETHOD char(100),
-LBTESTCD char(8),
-LBTEST char(40),
-LBSTRESU char(25),
-LBORRESU char(25)
-;
-alter table LABDICT_trial modify 
-LBCAT char(65) ,
-LBSPEC char(100),
-LBMETHOD char(100),
-LBTESTCD char(8),
-LBTEST char(40),
-LBSTRESU char(25),
-LBORRESU char(25)
-;
-alter table LB_RAW modify 
-LBCAT char(65) ,
-LBSPEC char(100),
-LBMETHOD char(100),
-LBTESTCD char(8),
-LBTEST char(40),
-LBSTRESU char(25),
-LBORRESU char(25)
-;
-quit;
+%macro modifyattri(data=);
+ proc sql ;
+  alter table &data modify 
+	LBCAT char(65) ,
+	LBSPEC char(100),
+	LBMETHOD char(100),
+	LBTESTCD char(8),
+	LBTEST char(40),
+	LBSTRESU char(25),
+	LBORRESU char(25)
+	;
+ quit;
+%mend;
 
+%modifyattri(data=LABDICT_ALL)
+%modifyattri(data=LABDICT_trial)
+%modifyattri(data=LB_RAW)
 
 filename DR_Map url "https://raw.githubusercontent.com/zhanglianbo35/SAS-code/master/45_Discrete_Result_Map.csv";
 data Discrete_Result_Map;
-length LBORRES $200 LBSTRESC $200; 
-infile DR_Map dsd dlm=',' firstobs=2;
-input LBORRES $ LBSTRESC $  ; 
+  length LBORRES $200 LBSTRESC $200; 
+  infile DR_Map dsd dlm=',' firstobs=2;
+  input LBORRES $ LBSTRESC $  ; 
 run;
 
 proc sort data= Discrete_Result_Map out=ore2std nodupkey;
@@ -697,6 +696,7 @@ noobs;
 
  ods tagsets.excelxp close; 
 
+filename _all_ clear;
 
 
 
