@@ -29,7 +29,7 @@
             <PATH syntax="XPathENR">/{1}xfdf/@space</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -78,7 +78,7 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@color</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_opacity">
@@ -91,28 +91,28 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@creationdate</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>23</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_flags">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@flags</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_date">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@date</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_name">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@name</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_page">
@@ -125,42 +125,42 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@fringe</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_rect">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@rect</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_title">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@title</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="freetext_subject">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/@subject</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>500</LENGTH>
         </COLUMN>
 
         <COLUMN name="defaultappearance">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/{1}defaultappearance</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="defaultstyle">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/{1}defaultstyle</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -203,21 +203,21 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/{1}contents-richtext/{2}body/@{3}APIVersion</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="body_spec">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/{1}contents-richtext/{2}body/@{3}spec</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="body_style">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/{1}contents-richtext/{2}body/@style</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -267,14 +267,14 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/{1}contents-richtext/{2}body/{2}p/{2}span/@style</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="span">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}freetext/{1}contents-richtext/{2}body/{2}p/{2}span</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>250</LENGTH>
+            <LENGTH>550</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -299,42 +299,42 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@color</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_creationdate">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@creationdate</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_flags">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@flags</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_date">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@date</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_name">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@name</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>500</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_icon">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@icon</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_page">
@@ -347,35 +347,35 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@rect</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_subject">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@subject</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>110</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_title">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@title</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>70</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_state">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@state</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>80</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="text_statemodel">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/@statemodel</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>60</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -418,14 +418,14 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}contents-richtext/{2}body/@{3}APIVersion</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="body1_spec">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}contents-richtext/{2}body/@{3}spec</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>10</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -450,7 +450,7 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}contents-richtext/{2}body/{2}p</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -475,14 +475,14 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}contents-richtext/{2}body/{2}p/{2}span/@dir</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>10</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="span1_style">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}contents-richtext/{2}body/{2}p/{2}span/@style</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="span1">
@@ -514,14 +514,14 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}popup/@flags</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>50</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="popup_open">
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}popup/@open</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>10</LENGTH>
+            <LENGTH>100</LENGTH>
         </COLUMN>
 
         <COLUMN name="popup_page">
@@ -534,7 +534,7 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}annots/{1}text/{1}popup/@rect</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -559,7 +559,7 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}f/@href</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
     </TABLE>
@@ -584,14 +584,14 @@
             <PATH syntax="XPathENR">/{1}xfdf/{1}ids/@original</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
         <COLUMN name="ids_modified">
             <PATH syntax="XPathENR">/{1}xfdf/{1}ids/@modified</PATH>
             <TYPE>character</TYPE>
             <DATATYPE>string</DATATYPE>
-            <LENGTH>100</LENGTH>
+            <LENGTH>200</LENGTH>
         </COLUMN>
 
     </TABLE>
