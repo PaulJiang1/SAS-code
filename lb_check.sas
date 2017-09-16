@@ -1,12 +1,20 @@
-proc delete data= _all_ ;
-run;
+/*-----------------------------------------------------------------------------
+PAREXEL INTERNATIONAL LTD
+Sponsor / Protocol No: Macro tool
+PXL Study Code: 
+SAS Version: SAS 9.3
+Operating System:  
+-------------------------------------------------------------------------------
+Author: Lianbo Zhang $LastChangedBy:  $
+Creation / modified: 2017-08-01 / $LastChangedDate: $
+Program Location/name:          $HeadURL:$
+Files Created: This program is to check issues in SDTM.LB/SUPPLB.
+ 
+Update hisitory:
 
-%let project=223869;
-
-
-%let root=%str(\\CN-SHA-HFP001.ap.pxl.int\VOL5\Groups\STATISTICAL PROGRAMMING\DeptShare\21_Janssen\Janssen Standard Documents - SDTM\LB_CHECK);
-
-libname transfer "&root.\&project";
+-------------------------------------------------------------------------------
+MODIFICATION HISTORY: Subversion $Rev:  $
+-----------------------------------------------------------------------------*/
 
 data _null_;
   set transfer.LB (keep=STUDYID firstobs=1 obs=1);
@@ -14,10 +22,297 @@ data _null_;
 run;
 
 
-filename trial  "&root.\&project.\LABDICT_2015_10.xls";
-filename latest "&root.\LABDICT_2017_05_01.xls";
-filename valust "&root.\LUDWIG_VALUELST_2017_05.xls" ;
-filename result "&root.\&project.\&STUDYID._LB_CHECK.xls" ;
+/******************************************************************************/
+/*  setup your study's info and input, output location here                                             */
+/******************************************************************************/
+
+%let project=jjprd224002;
+%let root=/projects/&project./stats/transfer/global;
+
+
+filename trial  "&root./LABDICT_2015_10.xls";                        *trial ludiwg verision and dir; 
+filename latest "&root./LABDICT_2017_05_01.xls";                     *latest ludiwg verision and dir; 
+filename valust "&root./LUDWIG_VALUELST_2017_05.xls" ;               *value list ludiwg verision and dir;
+filename result "&root./&STUDYID._LB_CHECK.xls" ;                    *LB check report output filename and location ; 
+
+
+/*****************************************************************************************************/
+*********** Do not modify the code below ,even itoccur error or warnning in log             **********;
+/*****************************************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+proc delete data= _all_ ;
+run;
 
 
  proc transpose data= transfer.supplb  out=supplb (drop=_:  );
@@ -59,19 +354,19 @@ quit;
 
 PROC IMPORT	OUT=  LUDWIG_VALUELST 
    DATAFILE= valust
-        DBMS=EXCEL REPLACE;
+        DBMS=xls REPLACE;
   GETNAMES=YES;    
 RUN;
 
 PROC IMPORT	 OUT=  LABDICT_ALL
   DATAFILE= latest
-        DBMS=excel REPLACE;	
+        DBMS=xls REPLACE;	
     GETNAMES=YES;    
 RUN;
 
 PROC IMPORT	 OUT=  LABDICT_trial
    DATAFILE= trial
-        DBMS=excel REPLACE;	
+        DBMS=xls REPLACE;	
    GETNAMES=YES;    
 RUN;
 
@@ -658,7 +953,7 @@ title;
 ods tagsets.ExcelXP options(sheet_name="check_%substr(%scan(&chcklst, &count,%str( )),7)" 
                             FROZEN_HEADERS = "4"
 							FROZEN_rowHEADERS = "1"
-                            sheet_interval="NONE"     );
+                            sheet_interval="NONE"    autofilter='all' autofilter_table='2' );
 /*%cvt_char(data=%scan(&chcklst, &count,%str( ))); */
 %trim1(indsn=%scan(&chcklst, &count,%str( )) )
 proc report data= Exceptionsummary (where=(Check_No= "%substr(%scan(&chcklst, &count,%str( )) ,7)" ))nowd;
